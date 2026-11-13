@@ -1,0 +1,68 @@
+# Exemples indépendants. Remplacez les identifiants après une création.
+# Compatible avec les clients qui prennent en charge les fichiers .http.
+
+### Utilisateurs
+GET http://127.0.0.1:8001/api/users?q=alice&page=1&limit=10
+
+### Un utilisateur
+GET http://127.0.0.1:8001/api/users/1
+
+### Création (409 si cet email existe déjà)
+POST http://127.0.0.1:8001/api/users
+Content-Type: application/json
+
+{"name":"Zoé Petit","email":"zoe@example.test","role":"customer"}
+
+### Modification de l'utilisateur initial 1
+PATCH http://127.0.0.1:8001/api/users/1
+Content-Type: application/json
+
+{"name":"Alice Martin-Dupont"}
+
+### Produits
+GET http://127.0.0.1:8002/api/products?q=Souris
+
+### Produit 2
+GET http://127.0.0.1:8002/api/products/2
+
+### Création d'un produit
+POST http://127.0.0.1:8002/api/products
+Content-Type: application/json
+
+{"name":"Support ordinateur","priceCents":3490,"stock":8}
+
+### Modification du stock
+PATCH http://127.0.0.1:8002/api/products/1
+Content-Type: application/json
+
+{"stock":10}
+
+### Commandes en attente d'un utilisateur
+GET http://127.0.0.1:8003/api/orders?userId=1&status=pending
+
+### Commande 1
+GET http://127.0.0.1:8003/api/orders/1
+
+### Nouvelle commande
+POST http://127.0.0.1:8003/api/orders
+Content-Type: application/json
+
+{"userId":1,"items":[{"productId":1,"quantity":2}]}
+
+### Confirmation de la commande initiale 1
+PATCH http://127.0.0.1:8003/api/orders/1
+Content-Type: application/json
+
+{"status":"confirmed"}
+
+### HEAD, sans corps
+HEAD http://127.0.0.1:8002/api/products/1
+
+### Erreur métier 404
+GET http://127.0.0.1:8002/api/products/999
+
+### État du processus Produits, y compris en simulation
+GET http://127.0.0.1:8002/health
+
+### Suppression de l'utilisateur initial 3 (redémarrer pour le restaurer)
+DELETE http://127.0.0.1:8001/api/users/3
