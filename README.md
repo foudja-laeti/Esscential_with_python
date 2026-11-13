@@ -5,7 +5,23 @@ Application autonome du mini-projet API Gateway (EADL FE). Elle expose le servic
 ## Prérequis
 
 - Python 3.11 ou supérieur
+- Un serveur MySQL 8 (WAMP, XAMPP, Docker...) démarré
 - Accès à PyPI pour la première installation des dépendances
+
+## Base de données
+
+1. Créer la base et l'utilisateur (client MySQL ou phpMyAdmin, onglet SQL) :
+```sql
+CREATE DATABASE products_db CHARACTER SET utf8mb4;
+CREATE USER 'products_user'@'localhost' IDENTIFIED BY 'choisissez-un-mot-de-passe';
+GRANT ALL PRIVILEGES ON products_db.* TO 'products_user'@'localhost';
+```
+2. Créer la table et les 3 produits de départ : exécuter le contenu de `db/schema.sql` sur `products_db`.
+3. Copier `.env.example` en `.env` et y mettre le mot de passe choisi. Le fichier `.env` n'est jamais versionné.
+
+Les données sont **persistantes** : un redémarrage du service ne les réinitialise pas. Pour revenir aux 3 produits de départ (avant une démonstration ou une comparaison), exécuter `db/reset.sql`.
+
+Si MySQL est arrêté ou injoignable, les routes métier répondent **503** `DATABASE_UNAVAILABLE` avec `Retry-After: 5` (connexion limitée à 3 secondes) ; `/health` reste disponible. Le service se rétablit seul au retour de MySQL.
 
 ## Installation
 
@@ -14,7 +30,6 @@ python -m venv .venv
 source .venv/bin/activate            # Windows PowerShell : .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
-
 Dans chaque nouveau terminal, réactivez le venv avant de lancer le service.
 
 ## Lancement et arrêt
@@ -65,6 +80,7 @@ Sous Windows PowerShell, utilisez `curl.exe`.
 | `--host H` | `HOST` | Adresse d'écoute (défaut 127.0.0.1) |
 | `--delay-ms N` | `PRODUCTS_DELAY_MS` | Retard de 0 à 30000 ms sur les routes métier |
 | `--mode unavailable` | `PRODUCTS_MODE` | Réponse 503 avec `Retry-After: 5` sur les routes métier ; `/health` reste disponible |
+| (aucune option) | `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE` | Connexion MySQL (voir `.env.example`) |
 
 Les options de ligne de commande ont priorité sur les variables d'environnement.
 
@@ -75,7 +91,7 @@ python run.py --delay-ms 3000
 
 ## Données de départ
 
-3 produits (ids 1 à 3). Le prochain identifiant créé est 4. Un redémarrage rétablit ce jeu initial.
+Les données sont stockées dans MySQL. db/reset.sql rétablit ces 3 produits.
 
 ## Code commun
 
